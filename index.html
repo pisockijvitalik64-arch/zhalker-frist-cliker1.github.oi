@@ -255,7 +255,14 @@
             margin-top: 15px;
             font-family: 'Courier New', monospace;
             font-size: 14px;
-            display: none;
+        }
+        
+        .save-timer {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ffcc00;
+            text-shadow: 1px 1px 0 #000;
+            font-weight: bold;
         }
         
         .class-shop {
@@ -529,6 +536,7 @@
             border: 4px solid #ffcc00;
             border-radius: 10px;
             padding: 15px;
+            display: none;
         }
         
         .leaderboard-title {
@@ -882,6 +890,7 @@
         </div>
         
         <input type="text" id="save-link" class="save-input" placeholder="Ссылка сохранения появится здесь..." readonly>
+        <div class="save-timer" id="save-timer"></div>
         
         <div class="promo-section">
             <h3>Активируйте Промокоды</h3>
@@ -938,8 +947,9 @@
         let turretInterval = null;
         let parryTimer = null;
         
-        // Серверные настройки
-        const SERVER_URL = "https://zhalker-server.glitch.me";
+        // Переменные для сохранений
+        let saveTimeout = null;
+        let saveExpiryTime = null;
         
         // Элементы интерфейса
         const coinCountElement = document.getElementById('coin-count');
@@ -952,6 +962,7 @@
         const clicker = document.getElementById('clicker');
         const coinDisplay = document.querySelector('.coin-display');
         const saveLinkInput = document.getElementById('save-link');
+        const saveTimerElement = document.getElementById('save-timer');
         const saveGameButton = document.getElementById('save-game');
         const loadGameButton = document.getElementById('load-game');
         const noobClass = document.getElementById('noob-class');
@@ -992,16 +1003,25 @@
             }
             playerIdElement.textContent = playerId;
             
-            // Загрузка сохранения
-            loadLocalSave();
+            // Проверка наличия сохранения в URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const saveData = urlParams.get('save');
+            
+            if (saveData) {
+                try {
+                    loadSaveFromData(saveData);
+                } catch (error) {
+                    console.error('Ошибка загрузки сохранения из URL:', error);
+                }
+            } else {
+                // Загрузка локального сохранения
+                loadLocalSave();
+            }
             
             // Обновление интерфейса
             updateUI();
             updateSkillsForClass();
             updateInventory();
-            
-            // Загрузка лидерборда
-            loadLeaderboard();
             
             // Сохранение игры каждые 30 секунд
             setInterval(saveGame, 30000);
@@ -1036,7 +1056,28 @@
                     }
                     updateUI();
                 }
+                
+                // Обновление таймера сохранения
+                updateSaveTimer();
             }, 100);
+        }
+        
+        // Обновление таймера сохранения
+        function updateSaveTimer() {
+            if (saveExpiryTime) {
+                const timeLeft = Math.max(0, Math.ceil((saveExpiryTime - Date.now()) / 1000));
+                
+                if (timeLeft > 0) {
+                    saveTimerElement.textContent = `Ссылка действительна еще: ${timeLeft} сек`;
+                    saveTimerElement.style.color = timeLeft > 5 ? "#00ff00" : "#ff0000";
+                } else {
+                    saveTimerElement.textContent = "Ссылка больше не действительна!";
+                    saveTimerElement.style.color = "#ff0000";
+                    saveLinkInput.value = "";
+                    clearTimeout(saveTimeout);
+                    saveExpiryTime = null;
+                }
+            }
         }
         
         // Переключение вкладок
@@ -1058,11 +1099,6 @@
                 // Обновляем инвентарь при переходе на вкладку
                 if (tabId === 'inventory') {
                     updateInventory();
-                }
-                
-                // Обновляем лидерборд при переходе на вкладку
-                if (tabId === 'leaderboard') {
-                    loadLeaderboard();
                 }
             });
         });
@@ -1469,17 +1505,14 @@
         
         // Создание сохранения игры
         function createSave() {
-            const gameState = {
-                coins: coins,
-                coinsPerClick: coinsPerClick,
-                coinsPerSecond: coinsPerSecond,
-                upgrades: upgrades,
-                inventory: inventory,
-                playerClass: playerClass,
-                playerHealth: playerHealth,
-                botHealth: botHealth,
-                activatedPromos: activatedPromos
-            };
+            const gameState = getGameState();
+            
+            // Генерируем случайное время жизни от 15 до 25 секунд
+            const expirySeconds = Math.floor(Math.random() * 11) + 15; // 15-25 секунд
+            const expiryTime = Date.now() + (expirySeconds * 1000);
+            
+            // Добавляем время истечения в состояние
+            gameState.expiry = expiryTime;
             
             // Кодируем состояние игры в base64
             const saveString = btoa(JSON.stringify(gameState));
@@ -1492,8 +1525,73 @@
             saveLinkInput.value = saveLink;
             saveLinkInput.select();
             
+            // Устанавливаем таймер
+            saveExpiryTime = expiryTime;
+            updateSaveTimer();
+            
+            // Устанавливаем таймаут для очистки ссылки
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveLinkInput.value = "";
+                saveTimerElement.textContent = "Ссылка больше не действительна!";
+                saveTimerElement.style.color = "#ff0000";
+                saveExpiryTime = null;
+            }, expirySeconds * 1000);
+            
             // Показываем сообщение
-            alert('Сохранение создано! Скопируйте ссылку чтобы сохранить прогресс.');
+            alert(`Сохранение создано! Скопируйте ссылку чтобы сохранить прогресс. Ссылка действительна ${expirySeconds} секунд.`);
+        }
+        
+        // Получение состояния игры
+        function getGameState() {
+            return {
+                coins: coins,
+                coinsPerClick: coinsPerClick,
+                coinsPerSecond: coinsPerSecond,
+                upgrades: upgrades,
+                inventory: inventory,
+                playerClass: playerClass,
+                playerHealth: playerHealth,
+                botHealth: botHealth,
+                activatedPromos: activatedPromos
+            };
+        }
+        
+        // Загрузка сохранения игры из данных
+        function loadSaveFromData(saveData) {
+            try {
+                // Декодируем сохранение
+                const decodedSave = atob(saveData);
+                const gameState = JSON.parse(decodedSave);
+                
+                // Проверяем срок действия
+                if (gameState.expiry && gameState.expiry < Date.now()) {
+                    alert('Срок действия сохранения истек! Создайте новое сохранение.');
+                    return false;
+                }
+                
+                // Применяем сохранение
+                coins = gameState.coins || 0;
+                coinsPerClick = gameState.coinsPerClick || 1;
+                coinsPerSecond = gameState.coinsPerSecond || 0;
+                upgrades = gameState.upgrades || { upgrade1: 0, upgrade2: 0, upgrade3: 0, bottleUpgrade: 0 };
+                inventory = gameState.inventory || { classes: [], bottles: 0, gravityBottles: 0, glitchBottles: 0 };
+                playerClass = gameState.playerClass || null;
+                playerHealth = gameState.playerHealth || 100;
+                botHealth = gameState.botHealth || 100;
+                activatedPromos = gameState.activatedPromos || [];
+                
+                // Обновляем интерфейс
+                updateUI();
+                updateSkillsForClass();
+                updateInventory();
+                
+                return true;
+            } catch (error) {
+                console.error('Ошибка загрузки сохранения:', error);
+                alert('Ошибка загрузки сохранения. Возможно, файл поврежден.');
+                return false;
+            }
         }
         
         // Загрузка сохранения игры
@@ -1510,34 +1608,13 @@
                     throw new Error('Неверная ссылка сохранения');
                 }
                 
-                // Декодируем сохранение
-                const decodedSave = atob(saveData);
-                const gameState = JSON.parse(decodedSave);
-                
-                // Применяем сохранение
-                coins = gameState.coins;
-                coinsPerClick = gameState.coinsPerClick;
-                coinsPerSecond = gameState.coinsPerSecond;
-                upgrades = gameState.upgrades;
-                inventory = gameState.inventory || { classes: [], bottles: 0, gravityBottles: 0, glitchBottles: 0 };
-                playerClass = gameState.playerClass;
-                playerHealth = gameState.playerHealth || 100;
-                botHealth = gameState.botHealth || 100;
-                activatedPromos = gameState.activatedPromos || [];
-                
-                // Обновляем интерфейс
-                updateUI();
-                updateSkillsForClass();
-                updateInventory();
-                
-                // Показываем сообщение
-                alert('Сохранение успешно загружено!');
-                
-                // Скрываем поле ссылки
-                saveLinkInput.style.display = 'none';
-                
-                // Сохранение на сервере
-                saveGame();
+                // Загружаем сохранение
+                if (loadSaveFromData(saveData)) {
+                    alert('Сохранение успешно загружено!');
+                    
+                    // Сохранение в localStorage
+                    saveGame();
+                }
             } catch (error) {
                 alert(`Ошибка загрузки сохранения: ${error.message}`);
                 console.error('Ошибка загрузки сохранения:', error);
@@ -1552,12 +1629,12 @@
                     const gameState = JSON.parse(saveData);
                     
                     // Применяем сохранение
-                    coins = gameState.coins;
-                    coinsPerClick = gameState.coinsPerClick;
-                    coinsPerSecond = gameState.coinsPerSecond;
-                    upgrades = gameState.upgrades;
+                    coins = gameState.coins || 0;
+                    coinsPerClick = gameState.coinsPerClick || 1;
+                    coinsPerSecond = gameState.coinsPerSecond || 0;
+                    upgrades = gameState.upgrades || { upgrade1: 0, upgrade2: 0, upgrade3: 0, bottleUpgrade: 0 };
                     inventory = gameState.inventory || { classes: [], bottles: 0, gravityBottles: 0, glitchBottles: 0 };
-                    playerClass = gameState.playerClass;
+                    playerClass = gameState.playerClass || null;
                     playerHealth = gameState.playerHealth || 100;
                     botHealth = gameState.botHealth || 100;
                     activatedPromos = gameState.activatedPromos || [];
@@ -1574,97 +1651,10 @@
         
         // Сохранение игры
         function saveGame() {
-            const gameState = {
-                coins: coins,
-                coinsPerClick: coinsPerClick,
-                coinsPerSecond: coinsPerSecond,
-                upgrades: upgrades,
-                inventory: inventory,
-                playerClass: playerClass,
-                playerHealth: playerHealth,
-                botHealth: botHealth,
-                activatedPromos: activatedPromos
-            };
+            const gameState = getGameState();
             
             // Сохранение в localStorage
             localStorage.setItem('zhalkerSave', JSON.stringify(gameState));
-            
-            // Отправка данных на сервер
-            updateLeaderboard();
-        }
-        
-        // Обновление лидерборда
-        function updateLeaderboard() {
-            // Отправляем текущий счет на сервер
-            fetch(`${SERVER_URL}/update-score`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    playerId: playerId,
-                    score: coins
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Обновляем лидерборд
-                    loadLeaderboard();
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка обновления лидерборда:', error);
-            });
-        }
-        
-        // Загрузка лидерборда
-        function loadLeaderboard() {
-            leaderboardList.innerHTML = '<div class="leaderboard-item">Загрузка...</div>';
-            
-            fetch(`${SERVER_URL}/leaderboard`)
-            .then(response => response.json())
-            .then(data => {
-                leaderboardList.innerHTML = '';
-                
-                // Отображаем топ-10 игроков
-                data.leaderboard.slice(0, 10).forEach((player, index) => {
-                    const item = document.createElement('div');
-                    item.className = `leaderboard-item ${player.playerId === playerId ? 'player-highlight' : ''}`;
-                    
-                    const rank = document.createElement('span');
-                    rank.textContent = `#${index + 1} `;
-                    rank.style.marginRight = '10px';
-                    rank.style.color = '#ffcc00';
-                    
-                    const name = document.createElement('span');
-                    name.className = 'leaderboard-name';
-                    name.textContent = player.playerId;
-                    
-                    const score = document.createElement('span');
-                    score.className = 'leaderboard-score';
-                    score.textContent = player.score.toLocaleString();
-                    
-                    item.appendChild(rank);
-                    item.appendChild(name);
-                    item.appendChild(score);
-                    leaderboardList.appendChild(item);
-                });
-                
-                // Отображаем позицию игрока
-                const playerIndex = data.leaderboard.findIndex(p => p.playerId === playerId);
-                if (playerIndex !== -1) {
-                    playerRankElement.textContent = `#${playerIndex + 1}`;
-                } else {
-                    playerRankElement.textContent = "Не в топе";
-                }
-                
-                playerScoreElement.textContent = coins.toLocaleString();
-            })
-            .catch(error => {
-                console.error('Ошибка загрузки лидерборда:', error);
-                leaderboardList.innerHTML = '<div class="leaderboard-item">Ошибка загрузки лидерборда</div>';
-            });
         }
         
         // Активация промокода
@@ -1950,7 +1940,7 @@
             playerHealth = Math.min(100, playerHealth + heal);
             updateUI();
             
-            addLogEntry(`Вы использовали Курочку и восстановли ${heal} HP!`, "player");
+            addLogEntry(`Вы использовали Курочку и восстановили ${heal} HP!`, "player");
             skillCooldowns.skill2 = 4;
             updateSkillCooldowns();
             
