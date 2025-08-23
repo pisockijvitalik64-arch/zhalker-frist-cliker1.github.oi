@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zhalker Coin Clicker - Исправленная версия</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6b8cff, #3a5fcd);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 8px solid #000;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+        }
+        
+        .header {
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-family: 'Impact', sans-serif;
+            font-size: 42px;
+            color: #fff;
+            text-shadow: 4px 4px 0 #000;
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            background: linear-gradient(to bottom, #555, #333);
+            border: 4px solid #000;
+            border-radius: 8px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            color: #ffcc00;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .tab.active {
+            background: linear-gradient(to bottom, #ff9900, #cc6600);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .coin-display {
+            background: linear-gradient(to bottom, #ffcc00, #ff9900);
+            border: 6px solid #000;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .coin-value {
+            font-size: 40px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 3px 3px 0 #000;
+            margin-bottom: 5px;
+        }
+        
+        .click-area {
+            background: linear-gradient(to bottom, #ff6600, #cc3300);
+            border: 6px solid #000;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px auto;
+            cursor: pointer;
+            max-width: 350px;
+            transition: transform 0.1s;
+        }
+
+        .click-area:active {
+            transform: scale(0.95);
+        }
+        
+        .click-area h2 {
+            font-size: 30px;
+            color: #fff;
+            text-shadow: 3px 3px 0 #000;
+        }
+        
+        .upgrades {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .upgrade {
+            background: linear-gradient(to bottom, #33cc33, #009900);
+            border: 4px solid #000;
+            border-radius: 10px;
+            padding: 12px;
+            width: 160px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .upgrade:hover {
+            transform: translateY(-3px);
+        }
+        
+        .upgrade h3 {
+            font-size: 16px;
+            color: #fff;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 5px;
+        }
+        
+        .upgrade-cost {
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        
+        .stats {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 4px solid #000;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        
+        .stats p {
+            font-size: 16px;
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+            margin: 5px 0;
+        }
+        
+        .level-container {
+            margin: 15px auto;
+            max-width: 400px;
+        }
+        
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .level-bar {
+            height: 20px;
+            background: #333;
+            border: 3px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .level-progress {
+            height: 100%;
+            background: linear-gradient(to right, #00cc00, #00ff00);
+        }
+        
+        .class-shop {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .class-item {
+            background: linear-gradient(to bottom, #7a5ada, #4d3a9e);
+            border: 5px solid #000;
+            border-radius: 12px;
+            padding: 15px;
+            width: 280px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .class-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .class-item h3 {
+            font-size: 20px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 10px;
+        }
+        
+        .class-cost {
+            font-weight: bold;
+            color: #ffcc00;
+            margin-top: 10px;
+        }
+        
+        .custom-class-item {
+            background: linear-gradient(to bottom, #ff55ff, #cc00cc);
+        }
+        
+        .workshop {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 4px solid #ffcc00;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .workshop-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .workshop-input, .workshop-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 4px solid #000;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 16px;
+        }
+        
+        .workshop-button {
+            background: linear-gradient(to bottom, #ff9900, #cc6600);
+            border: 4px solid #000;
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .save-section {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .save-button {
+            background: linear-gradient(to bottom, #4d79ff, #1a53ff);
+            border: 4px solid #000;
+            border-radius: 10px;
+            padding: 10px 15px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .save-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 4px solid #000;
+            border-radius: 10px;
+            padding: 8px;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 10px;
+        }
+        
+        .arena {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 6px solid #000;
+            border-radius: 15px;
+            padding: 15px;
+        }
+        
+        .combatants {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .player-info, .bot-info {
+            text-align: center;
+            width: 180px;
+        }
+        
+        .character {
+            width: 100px;
+            height: 100px;
+            background: #555;
+            border: 5px solid #000;
+            border-radius: 10px;
+            margin: 0 auto 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .player-info .character {
+            background: linear-gradient(to bottom, #55aaff, #2266cc);
+        }
+        
+        .bot-info .character {
+            background: linear-gradient(to bottom, #ff5555, #cc2222);
+        }
+        
+        .health-bar {
+            width: 100%;
+            height: 15px;
+            background: #333;
+            border: 2px solid #000;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(to right, #00cc00, #00aa00);
+            transition: width 0.5s ease-out;
+        }
+        
+        .bot-info .health-fill {
+            background: linear-gradient(to right, #cc0000, #aa0000);
+        }
+        
+        .skills {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .skill {
+            background: linear-gradient(to bottom, #5555ff, #3333aa);
+            border: 4px solid #000;
+            border-radius: 8px;
+            padding: 10px;
+            cursor: pointer;
+            width: 160px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .skill:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .skill:hover:not(:disabled) {
+            transform: translateY(-3px);
+        }
+        
+        .skill h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #ffcc00;
+        }
+        
+        .cooldown-text {
+            color: #ff9900;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .combat-log {
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid #000;
+            border-radius: 8px;
+            padding: 8px;
+            height: 80px;
+            overflow-y: auto;
+            text-align: left;
+            font-size: 14px;
+        }
+        
+        .log-entry {
+            margin-bottom: 3px;
+            padding: 2px;
+            border-radius: 3px;
+        }
+        
+        .player-log {
+            background: rgba(85, 170, 255, 0.2);
+            color: #55aaff;
+        }
+        
+        .bot-log {
+            background: rgba(255, 85, 85, 0.2);
+            color: #ff5555;
+        }
+        
+        .promo-section {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 4px solid #ffcc00;
+            border-radius: 10px;
+        }
+        
+        .promo-input-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .promo-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 4px solid #000;
+            border-radius: 8px;
+            padding: 8px;
+            width: 180px;
+        }
+        
+        .promo-button {
+            background: linear-gradient(to bottom, #ff9900, #cc6600);
+            border: 4px solid #000;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .promo-message {
+            margin-top: 10px;
+            font-size: 14px;
+            min-height: 20px;
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .inventory-item {
+            background: linear-gradient(to bottom, #8a6dff, #5a4dcc);
+            border: 4px solid #000;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .inventory-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .inventory-item h4 {
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .bottle-item {
+            background: linear-gradient(to bottom, #00cc99, #009966);
+        }
+        
+        .boost-item {
+            background: linear-gradient(to bottom, #ffaa00, #cc8800);
+        }
+        
+        .coin-effect {
+            position: absolute;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 20px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 0 #000;
+            animation: floatUp 1.5s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 4px solid #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 10px;
+            text-align: center;
+            border: 2px solid #000;
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .leaderboard-table th {
+            background: linear-gradient(to bottom, #555, #333);
+            color: #ffcc00;
+        }
+        
+        .leaderboard-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .boost-shop {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .boost-item {
+            background: linear-gradient(to bottom, #ffaa00, #cc8800);
+            border: 4px solid #000;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .boost-item:hover {
+            transform: translateY(-3px);
+        }
+        
+        .boost-item h4 {
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .boost-cost {
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        
+        .status-effect {
+            display: inline-block;
+            padding: 2px 5px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            margin: 0 2px;
+            font-size: 12px;
+            color: white;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .music-control {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(to bottom, #555, #333);
+            border: 4px solid #000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: #ffcc00;
+            font-size: 20px;
+        }
+        
+        .blood-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.5);
+            pointer-events: none;
+            opacity: 0;
+            animation: bloodSplash 0.5s forwards, bloodDrip 5s 0.5s forwards;
+        }
+        
+        @keyframes bloodSplash {
+            0% { opacity: 0; transform: scale(0); }
+            70% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes bloodDrip {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-80px); }
+        }
+        
+        .glitch-effect {
+            animation: glitch 0.5s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Zhalker Coin Clicker</h1>
+            <div class="tabs">
+                <div class="tab active" data-tab="clicker">Кликер</div>
+                <div class="tab" data-tab="classes">Классы</div>
+                <div class="tab" data-tab="boosts">Бусты</div>
+                <div class="tab" data-tab="inventory">Инвентарь</div>
+                <div class="tab" data-tab="arena">Арена</div>
+                <div class="tab" data-tab="promo">Промокоды</div>
+                <div class="tab" data-tab="save-load">Сохранение</div>
+                <div class="tab" data-tab="workshop" id="workshop-tab">Мастерская</div>
+            </div>
+        </div>
+        
+        <div class="tab-content active" id="clicker-tab">
+            <div class="coin-display">
+                <div class="coin-value" id="coin-count">0</div>
+                <div>Zhalker Coins</div>
+            </div>
+            
+            <div class="level-container">
+                <div class="level-info">
+                    <span>Уровень: <span id="player-level">1</span></span>
+                    <span>Опыт: <span id="player-xp">0</span>/<span id="player-next-level">100</span></span>
+                </div>
+                <div class="level-bar">
+                    <div class="level-progress" id="level-progress" style="width:0%"></div>
+                </div>
+            </div>
+            
+            <div class="click-area" id="clicker">
+                <h2>НАЖМИ МЕНЯ!</h2>
+            </div>
+            
+            <div class="upgrades" id="upgrades-list">
+                </div>
+            
+            <div class="stats">
+                <p>Монет за клик: <span id="coins-per-click">1</span></p>
+                <p>Монет в секунду: <span id="coins-per-second">0</span></p>
+                <p>Активный класс: <span id="current-class">Отсутствует</span></p>
+                <p>Активные эффекты: <span id="active-effects">Нет</span></p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="classes-tab">
+            <h2>Магазин Классов</h2>
+            
+            <div class="class-shop" id="class-shop-items">
+                </div>
+            
+            <h2>Ваши классы</h2>
+            <div class="class-shop" id="player-classes">
+                </div>
+        </div>
+        
+        <div class="tab-content" id="boosts-tab">
+            <h2>Магазин Бустов</h2>
+            
+            <div class="boost-shop">
+                <div class="boost-item" id="level-bottle">
+                    <h4>Бутылка Уровня</h4>
+                    <p>+1 уровень</p>
+                    <p class="boost-cost">Стоимость: 300 ZC</p>
+                </div>
+                
+                <div class="boost-item" id="glitch-bottle">
+                    <h4>Бутылка Глюцинации</h4>
+                    <p>Головокружение в бою (10 сек)</p>
+                    <p class="boost-cost">Стоимость: 250 ZC</p>
+                </div>
+                
+                <div class="boost-item" id="doublecoins-bottle">
+                    <h4>Бутылка Удвоения</h4>
+                    <p>x2 монеты на 30 сек</p>
+                    <p class="boost-cost">Стоимость: 400 ZC</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="inventory-tab">
+            <h2>Ваш Инвентарь</h2>
+            
+            <div class="inventory-grid" id="inventory-grid">
+                </div>
+        </div>
+        
+        <div class="tab-content" id="arena-tab">
+            <h2>Арена Боя</h2>
+            
+            <div class="arena">
+                <div class="combatants">
+                    <div class="player-info">
+                        <h3>Игрок</h3>
+                        <div class="character"></div>
+                        <div class="health-bar">
+                            <div class="health-fill" id="player-health-fill" style="width: 100%;"></div>
+                        </div>
+                        <span id="player-health-text">100 / 100 HP</span>
+                    </div>
+                    <div class="bot-info">
+                        <h3>Враг</h3>
+                        <div class="character" id="bot-character"></div>
+                        <div class="health-bar">
+                            <div class="health-fill" id="bot-health-fill" style="width: 100%;"></div>
+                        </div>
+                        <span id="bot-health-text">100 / 100 HP</span>
+                    </div>
+                </div>
+                
+                <div class="skills" id="player-skills">
+                    </div>
+                
+                <button class="promo-button" id="arena-start-button">Начать Бой</button>
+                <div class="combat-log" id="combat-log"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="promo-tab">
+            <h2>Промокоды</h2>
+            <div class="promo-section">
+                <p>Введите промокод для получения награды!</p>
+                <div class="promo-input-group">
+                    <input type="text" id="promo-input" class="promo-input" placeholder="Введите промокод">
+                    <button id="promo-button" class="promo-button">Активировать</button>
+                </div>
+                <div class="promo-message" id="promo-message"></div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="save-load-tab">
+            <h2>Сохранение и Загрузка</h2>
+            <div class="save-section">
+                <button id="save-button" class="save-button">Сохранить игру</button>
+                <button id="load-button" class="save-button">Загрузить игру</button>
+                <button id="reset-button" class="save-button" style="background: #cc0000;">Сбросить прогресс</button>
+            </div>
+        </div>
+
+        <div class="tab-content" id="workshop-tab">
+            <h2>Мастерская (Требуется 10-й уровень)</h2>
+            <div class="workshop">
+                <p>Создайте свой собственный класс за 100 ZC</p>
+                <div class="workshop-form">
+                    <input type="text" id="custom-class-name" class="workshop-input" placeholder="Название класса">
+                    <input type="text" id="custom-skill-name" class="workshop-input" placeholder="Название навыка">
+                    <input type="number" id="custom-skill-damage" class="workshop-input" placeholder="Урон навыка">
+                    <input type="number" id="custom-skill-cooldown" class="workshop-input" placeholder="Перезарядка (сек)">
+                    <button id="create-class-button" class="workshop-button">Создать класс (100 ZC)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="alert-message" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:white; padding:10px 20px; border-radius:8px; display:none; z-index:1000;"></div>
+        
+        <div class="music-control" id="music-toggle">♪</div>
+        <audio id="background-music" loop>
+            <source src="https://cdn.pixabay.com/download/audio/2022/01/20/audio_345c383fa8.mp3?filename=epic-adventure-cinematic-trailer-version-60s-14533.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+    
+    <script>
+        // Инициализация переменных
+        let coins = 0;
+        let coinsPerClick = 1;
+        let coinsPerSecond = 0;
+        let playerLevel = 1;
+        let playerXP = 0;
+        let nextLevelXP = 100;
+        let inventory = [];
+        let playerClass = null;
+        let activeEffects = {};
+        let activeSkills = {};
+        let boughtUpgrades = {};
+        let boughtClasses = [];
+
+        // Арена
+        let playerHealth = 100;
+        let playerMaxHealth = 100;
+        let botHealth = 100;
+        let botMaxHealth = 100;
+        let botDamage = 10;
+        let botAttackInterval;
+        let isFighting = false;
+
+        // Элементы DOM
+        const coinCountElem = document.getElementById('coin-count');
+        const clickerElem = document.getElementById('clicker');
+        const upgradesListElem = document.getElementById('upgrades-list');
+        const statsElem = document.querySelector('.stats');
+        const coinsPerClickElem = document.getElementById('coins-per-click');
+        const coinsPerSecondElem = document.getElementById('coins-per-second');
+        const activeEffectsElem = document.getElementById('active-effects');
+        const playerLevelElem = document.getElementById('player-level');
+        const playerXPElem = document.getElementById('player-xp');
+        const nextLevelXPElem = document.getElementById('player-next-level');
+        const levelProgressElem = document.getElementById('level-progress');
+        const classShopElem = document.getElementById('class-shop-items');
+        const playerClassesElem = document.getElementById('player-classes');
+        const inventoryGridElem = document.getElementById('inventory-grid');
+        const promoInput = document.getElementById('promo-input');
+        const promoButton = document.getElementById('promo-button');
+        const promoMessage = document.getElementById('promo-message');
+        const saveButton = document.getElementById('save-button');
+        const loadButton = document.getElementById('load-button');
+        const resetButton = document.getElementById('reset-button');
+        const arenaStartButton = document.getElementById('arena-start-button');
+        const playerHealthFill = document.getElementById('player-health-fill');
+        const playerHealthText = document.getElementById('player-health-text');
+        const botHealthFill = document.getElementById('bot-health-fill');
+        const botHealthText = document.getElementById('bot-health-text');
+        const combatLogElem = document.getElementById('combat-log');
+        const playerSkillsElem = document.getElementById('player-skills');
+        const currentClassElem = document.getElementById('current-class');
+        const alertMessageElem = document.getElementById('alert-message');
+        const workshopTab = document.getElementById('workshop-tab');
+        const createClassButton = document.getElementById('create-class-button');
+        const customClassNameInput = document.getElementById('custom-class-name');
+        const customSkillNameInput = document.getElementById('custom-skill-name');
+        const customSkillDamageInput = document.getElementById('custom-skill-damage');
+        const customSkillCooldownInput = document.getElementById('custom-skill-cooldown');
+        const musicToggle = document.getElementById('music-toggle');
+        const backgroundMusic = document.getElementById('background-music');
+
+        // Промокоды
+        const promoCodes = {
+            'pizza': {
+                coins: 1000,
+                xp: 200,
+                message: 'Промокод "pizza" активирован! Вы получили 1000 монет и 200 опыта!'
+            },
+            'zhalkerfan': {
+                coins: 500,
+                message: 'Промокод "zhalkerfan" активирован! Вы получили 500 монет!'
+            },
+            'hello': {
+                coins: 500,
+                xp: 100,
+                message: 'Промокод "hello" активирован! Вы получили 500 монет и 100 опыта!'
+            },
+            'hex': {
+                coins: 2000,
+                xp: 500,
+                message: 'Промокод "hex" активирован! Вы получили 2000 монет и 500 опыта!'
+            },
+            '2008': {
+                coins: 2008,
+                xp: 2008,
+                message: 'Промокод "2008" активирован! Вы получили 2008 монет и 2008 опыта!'
+            }
+        };
+        let usedPromoCodes = [];
+
+        // Улучшения
+        const upgradeData = {
+            'click-boost-1': { name: 'Клик Усилитель I', cost: 10, type: 'click', value: 1, desc: '+1 монета за клик' },
+            'click-boost-2': { name: 'Клик Усилитель II', cost: 50, type: 'click', value: 3, desc: '+3 монеты за клик' },
+            'click-boost-3': { name: 'Клик Усилитель III', cost: 200, type: 'click', value: 10, desc: '+10 монет за клик' },
+            'auto-click-1': { name: 'Авто-Кликер I', cost: 50, type: 'auto', value: 1, desc: '+1 монета в секунду' },
+            'auto-click-2': { name: 'Авто-Кликер II', cost: 200, type: 'auto', value: 5, desc: '+5 монет в секунду' },
+            'auto-click-3': { name: 'Авто-Кликер III', cost: 800, type: 'auto', value: 20, desc: '+20 монет в секунду' },
+        };
+
+        // Данные классов
+        const classes = {
+            noob: {
+                name: 'Нуб',
+                cost: 500,
+                desc: 'Начинающий боец с простыми, но эффективными способностями.',
+                skills: [{ name: 'Базовая атака', damage: 15, cooldown: 1, cost: 0 }]
+            },
+            shed: {
+                name: 'Шедлеский',
+                cost: 800,
+                desc: 'Мастер клинка с быстрыми атаками и поддержкой.',
+                skills: [{ name: 'Двойной удар', damage: 25, cooldown: 3, cost: 50}]
+            },
+            builder: {
+                name: 'Билдер',
+                cost: 150,
+                desc: 'Строитель укреплений и мастер турелей.',
+                skills: [{ name: 'Построить стену', defense: 30, cooldown: 5, cost: 100}]
+            },
+            elite: {
+                name: 'Элиут',
+                cost: 1200,
+                desc: 'Мастер пиццы с уникальными способностями.',
+                skills: [{ name: 'Бросить пиццу', damage: 40, cooldown: 8, cost: 200}]
+            },
+            flamethrower: {
+                name: 'Огнемётчик',
+                cost: 2500,
+                desc: 'Специалист по огню и разрушениям.',
+                skills: [
+                    { 
+                        name: 'Огонь', 
+                        minDamage: 15, 
+                        maxDamage: 30, 
+                        cooldown: 2, 
+                        cost: 30 
+                    },
+                    { 
+                        name: 'Огненная граната', 
+                        minDamage: 14, 
+                        maxDamage: 20, 
+                        cooldown: 3, 
+                        cost: 40 
+                    },
+                    { 
+                        name: 'Металлический капкан', 
+                        minDamage: 20, 
+                        maxDamage: 22, 
+                        cooldown: 5, 
+                        cost: 50,
+                        effect: 'blood'
+                    }
+                ]
+            }
+        };
+
+        // Данные бустов
+        const boostData = {
+            'level-bottle': {
+                name: 'Бутылка Уровня',
+                cost: 300,
+                type: 'boost',
+                action: () => {
+                    gainXP(nextLevelXP);
+                    showAlert('Вы использовали Бутылку Уровня и получили +1 уровень!');
+                }
+            },
+            'glitch-bottle': {
+                name: 'Бутылка Глюцинации',
+                cost: 250,
+                type: 'boost',
+                action: () => {
+                    addEffect('glitch', 10);
+                    showAlert('Вы использовали Бутылку Глюцинации!');
+                }
+            },
+            'doublecoins-bottle': {
+                name: 'Бутылка Удвоения',
+                cost: 400,
+                type: 'boost',
+                action: () => {
+                    addEffect('double_coins', 30);
+                    showAlert('Вы использовали Бутылку Удвоения! Монеты за клик x2!');
+                }
+            }
+        };
+
+        // Функции
+        function showAlert(message) {
+            alertMessageElem.textContent = message;
+            alertMessageElem.style.display = 'block';
+            setTimeout(() => {
+                alertMessageElem.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateUI() {
+            coinCountElem.textContent = formatNumber(coins);
+            coinsPerClickElem.textContent = formatNumber(coinsPerClick);
+            coinsPerSecondElem.textContent = formatNumber(coinsPerSecond);
+            playerLevelElem.textContent = playerLevel;
+            playerXPElem.textContent = playerXP;
+            nextLevelXPElem.textContent = nextLevelXP;
+            levelProgressElem.style.width = (playerXP / nextLevelXP) * 100 + '%';
+            currentClassElem.textContent = playerClass ? playerClass.name : 'Отсутствует';
+            updateEffectsDisplay();
+            updateInventoryUI();
+            updateClassShopUI();
+            updatePlayerClassesUI();
+            updateSkillsUI();
+            updateUpgradesUI();
+            updateWorkshopTab();
+        }
+        
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num;
+        }
+
+        function addCoins(amount) {
+            let finalAmount = amount;
+            if (activeEffects.double_coins) {
+                finalAmount *= 2;
+            }
+            coins += finalAmount;
+            
+            // Визуальный эффект
+            const coinEffect = document.createElement('div');
+            coinEffect.className = 'coin-effect';
+            coinEffect.textContent = `+${formatNumber(finalAmount)}`;
+            const clickerRect = clickerElem.getBoundingClientRect();
+            const x = clickerRect.left + clickerRect.width / 2;
+            const y = clickerRect.top + clickerRect.height / 2;
+            coinEffect.style.left = `${x}px`;
+            coinEffect.style.top = `${y}px`;
+            document.body.appendChild(coinEffect);
+            setTimeout(() => coinEffect.remove(), 1500);
+
+            updateUI();
+        }
+
+        function gainXP(amount) {
+            playerXP += amount;
+            checkLevelUp();
+            updateUI();
+        }
+
+        function checkLevelUp() {
+            while (playerXP >= nextLevelXP) {
+                playerXP -= nextLevelXP;
+                playerLevel++;
+                nextLevelXP = Math.round(nextLevelXP * 1.5);
+                showAlert(`Вы достигли ${playerLevel} уровня!`);
+            }
+            updateWorkshopTab();
+        }
+
+        function updateWorkshopTab() {
+            if (playerLevel >= 10) {
+                workshopTab.style.display = 'block';
+            } else {
+                workshopTab.style.display = 'none';
+            }
+        }
+        
+        function updateUpgradesUI() {
+            upgradesListElem.innerHTML = '';
+            for (const upgradeId in upgradeData) {
+                const upgrade = upgradeData[upgradeId];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'upgrade';
+                itemDiv.id = upgradeId;
+                itemDiv.innerHTML = `
+                    <h3>${upgrade.name}</h3>
+                    <p>${upgrade.desc}</p>
+                    <p class="upgrade-cost">Стоимость: ${formatNumber(upgrade.cost)} ZC</p>
+                `;
+                itemDiv.addEventListener('click', () => {
+                    if (coins >= upgrade.cost) {
+                        coins -= upgrade.cost;
+                        if (upgrade.type === 'click') {
+                            coinsPerClick += upgrade.value;
+                        } else if (upgrade.type === 'auto') {
+                            coinsPerSecond += upgrade.value;
+                        }
+                        // Увеличиваем стоимость следующего улучшения
+                        upgrade.cost = Math.round(upgrade.cost * 1.5);
+                        showAlert(`Вы купили "${upgrade.name}"!`);
+                        updateUI();
+                    } else {
+                        showAlert('Недостаточно монет!');
+                    }
+                });
+                upgradesListElem.appendChild(itemDiv);
+            }
+        }
+
+        function buyClass(classId) {
+            const classData = classes[classId];
+            if (coins >= classData.cost && !boughtClasses.includes(classId)) {
+                coins -= classData.cost;
+                boughtClasses.push(classId);
+                showAlert(`Вы купили класс "${classData.name}"!`);
+                updateUI();
+            } else if (boughtClasses.includes(classId)) {
+                showAlert('Вы уже купили этот класс!');
+            } else {
+                showAlert('Недостаточно монет!');
+            }
+        }
+
+        function updateClassShopUI() {
+            classShopElem.innerHTML = '';
+            for (const classId in classes) {
+                const classData = classes[classId];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'class-item';
+                if (boughtClasses.includes(classId)) {
+                    itemDiv.classList.add('bought-item');
+                    itemDiv.style.opacity = 0.5;
+                    itemDiv.style.cursor = 'not-allowed';
+                }
+                itemDiv.innerHTML = `
+                    <h3>${classData.name}</h3>
+                    <p>${classData.desc}</p>
+                    <div class="class-cost">Цена: ${formatNumber(classData.cost)} ZC</div>
+                `;
+                itemDiv.addEventListener('click', () => {
+                    if (!boughtClasses.includes(classId)) {
+                        buyClass(classId);
+                    }
+                });
+                classShopElem.appendChild(itemDiv);
+            }
+        }
+
+        function updatePlayerClassesUI() {
+            playerClassesElem.innerHTML = '';
+            boughtClasses.forEach(classId => {
+                const classData = classes[classId];
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'class-item custom-class-item';
+                itemDiv.innerHTML = `
+                    <h3>${classData.name}</h3>
+                    <p>Нажмите, чтобы активировать</p>
+                `;
+                itemDiv.addEventListener('click', () => {
+                    activateClass(classId);
+                });
+                playerClassesElem.appendChild(itemDiv);
+            });
+        }
+
+        function activateClass(classId) {
+            playerClass = classes[classId];
+            playerClass.id = classId;
+            showAlert(`Вы активировали класс "${playerClass.name}"!`);
+            updateUI();
+        }
+
+        function buyBoost(boostId) {
+            const boost = boostData[boostId];
+            if (coins >= boost.cost) {
+                coins -= boost.cost;
+                inventory.push(boostId);
+                showAlert(`Вы купили ${boost.name}!`);
+                updateUI();
+            } else {
+                showAlert('Недостаточно монет!');
+            }
+        }
+
+        function updateInventoryUI() {
+            inventoryGridElem.innerHTML = '';
+            inventory.forEach((item, index) => {
+                const boost = boostData[item];
+                if (!boost) return;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'inventory-item';
+                itemDiv.classList.add(`${item.split('-')[0]}-item`);
+                itemDiv.innerHTML = `
+                    <h4>${boost.name}</h4>
+                    <p>Нажмите, чтобы использовать</p>
+                `;
+                itemDiv.addEventListener('click', () => {
+                    if (boost.action) {
+                        boost.action();
+                        inventory.splice(index, 1);
+                        updateUI();
+                    }
+                });
+                inventoryGridElem.appendChild(itemDiv);
+            });
+        }
+
+        function addEffect(effectName, duration) {
+            activeEffects[effectName] = { timer: duration };
+            updateUI();
+        }
+        
+        function updateEffectsDisplay() {
+            const effectsList = Object.keys(activeEffects).map(effect => {
+                const effectData = activeEffects[effect];
+                return `<span class="status-effect">${effect.replace('_', ' ')} (${effectData.timer} сек)</span>`;
+            });
+            activeEffectsElem.innerHTML = effectsList.length > 0 ? effectsList.join('') : 'Нет';
+        }
+
+        function activatePromo() {
+            const code = promoInput.value.toLowerCase();
+            if (usedPromoCodes.includes(code)) {
+                promoMessage.textContent = 'Этот промокод уже был использован.';
+                promoMessage.style.color = '#ff5555';
+            } else if (promoCodes[code]) {
+                const promo = promoCodes[code];
+                addCoins(promo.coins || 0);
+                if (promo.xp) gainXP(promo.xp);
+                usedPromoCodes.push(code);
+                promoMessage.textContent = promo.message;
+                promoMessage.style.color = '#00cc00';
+                promoInput.value = ''; // Очищаем поле ввода
+            } else {
+                promoMessage.textContent = 'Неверный промокод!';
+                promoMessage.style.color = '#ff5555';
+            }
+        }
+
+        function saveGame() {
+            const saveData = {
+                coins, coinsPerClick, coinsPerSecond,
+                playerLevel, playerXP, nextLevelXP,
+                inventory, playerClass: playerClass ? playerClass.id : null,
+                activeEffects, boughtUpgrades, boughtClasses,
+                usedPromoCodes, upgradeData, classes
+            };
+            localStorage.setItem('zhalker_clicker_save', JSON.stringify(saveData));
+            showAlert('Игра сохранена!');
+        }
+
+        function loadGame() {
+            const savedData = localStorage.getItem('zhalker_clicker_save');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                coins = data.coins || 0;
+                coinsPerClick = data.coinsPerClick || 1;
+                coinsPerSecond = data.coinsPerSecond || 0;
+                playerLevel = data.playerLevel || 1;
+                playerXP = data.playerXP || 0;
+                nextLevelXP = data.nextLevelXP || 100;
+                inventory = data.inventory || [];
+                playerClass = data.playerClass ? classes[data.playerClass] : null;
+                activeEffects = data.activeEffects || {};
+                boughtUpgrades = data.boughtUpgrades || {};
+                boughtClasses = data.boughtClasses || [];
+                usedPromoCodes = data.usedPromoCodes || [];
+
+                // Загружаем прогресс улучшений
+                if (data.upgradeData) {
+                    for (const id in data.upgradeData) {
+                        if (upgradeData[id]) {
+                            upgradeData[id].cost = data.upgradeData[id].cost;
+                            upgradeData[id].value = data.upgradeData[id].value;
+                        }
+                    }
+                }
+                
+                // Загружаем кастомные классы
+                if (data.classes) {
+                    for (const id in data.classes) {
+                        if (id.startsWith('custom-class-')) {
+                            classes[id] = data.classes[id];
+                        }
+                    }
+                }
+                
+                showAlert('Игра загружена!');
+                updateUI();
+            } else {
+                showAlert('Нет сохраненных игр!');
+            }
+        }
+
+        function resetGame() {
+            if (confirm('Вы уверены, что хотите сбросить весь прогресс?')) {
+                localStorage.removeItem('zhalker_clicker_save');
+                location.reload();
+            }
+        }
+
+        // Арена
+        function startArenaBattle() {
+            if (isFighting) {
+                showAlert('Бой уже идет!');
+                return;
+            }
+            if (!playerClass) {
+                showAlert('Выберите класс, чтобы начать бой!');
+                return;
+            }
+
+            isFighting = true;
+            playerHealth = playerMaxHealth;
+            botHealth = botMaxHealth;
+            updateArenaUI();
+            logCombat('Бой начался!');
+            arenaStartButton.disabled = true;
+
+            botAttackInterval = setInterval(botAttack, 2000);
+        }
+
+        function botAttack() {
+            if (!isFighting) return;
+            
+            // Проверяем, не наложен ли эффект глюка
+            let actualDamage = botDamage;
+            if (activeEffects.glitch) {
+                actualDamage = Math.floor(botDamage * 0.7); // Уменьшаем урон на 30%
+            }
+            
+            playerHealth -= actualDamage;
+            logCombat('Враг наносит ' + actualDamage + ' урона!', 'bot');
+            updateArenaUI();
+            checkWinCondition();
+        }
+
+        function playerAttack(skill) {
+            if (!isFighting) return;
+            
+            // Вычисляем урон
+            let damage;
+            if (skill.minDamage !== undefined && skill.maxDamage !== undefined) {
+                damage = Math.floor(Math.random() * (skill.maxDamage - skill.minDamage + 1)) + skill.minDamage;
+            } else {
+                damage = skill.damage;
+            }
+            
+            botHealth -= damage;
+            logCombat('Вы наносите ' + damage + ' урона!', 'player');
+            updateArenaUI();
+            
+            // Если у навыка есть эффект, применяем его
+            if (skill.effect === 'blood') {
+                applyBloodEffect();
+            }
+            
+            checkWinCondition();
+        }
+
+        function applyBloodEffect() {
+            const botCharacter = document.getElementById('bot-character');
+            const bloodEffect = document.createElement('div');
+            bloodEffect.className = 'blood-effect';
+            botCharacter.appendChild(bloodEffect);
+            
+            setTimeout(() => {
+                bloodEffect.remove();
+            }, 5000);
+        }
+
+        function checkWinCondition() {
+            if (playerHealth <= 0) {
+                isFighting = false;
+                clearInterval(botAttackInterval);
+                logCombat('Вы проиграли бой!', 'bot');
+                arenaStartButton.disabled = false;
+                playerHealth = 0;
+                updateArenaUI();
+            } else if (botHealth <= 0) {
+                isFighting = false;
+                clearInterval(botAttackInterval);
+                logCombat('Вы победили! Получено 500 монет и 50 опыта!', 'player');
+                addCoins(500);
+                gainXP(50);
+                arenaStartButton.disabled = false;
+                botHealth = 0;
+                updateArenaUI();
+            }
+        }
+
+        function updateArenaUI() {
+            playerHealthFill.style.width = (playerHealth / playerMaxHealth) * 100 + '%';
+            playerHealthText.textContent = `${playerHealth} / ${playerMaxHealth} HP`;
+            botHealthFill.style.width = (botHealth / botMaxHealth) * 100 + '%';
+            botHealthText.textContent = `${botHealth} / ${botMaxHealth} HP`;
+        }
+        
+        function logCombat(message, type = '') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}-log`;
+            logEntry.textContent = message;
+            combatLogElem.appendChild(logEntry);
+            combatLogElem.scrollTop = combatLogElem.scrollHeight; // Прокрутка вниз
+        }
+
+        function updateSkillsUI() {
+            playerSkillsElem.innerHTML = '';
+            if (playerClass) {
+                playerClass.skills.forEach(skill => {
+                    const skillBtn = document.createElement('button');
+                    skillBtn.className = 'skill';
+                    
+                    let damageText = `Урон: ${skill.damage || 0}`;
+                    if (skill.minDamage !== undefined && skill.maxDamage !== undefined) {
+                        damageText = `Урон: ${skill.minDamage}-${skill.maxDamage}`;
+                    }
+                    
+                    skillBtn.innerHTML = `
+                        <h4>${skill.name}</h4>
+                        <p>${damageText}</p>
+                        <p>Стоимость: ${skill.cost}</p>
+                        <p class="cooldown-text" id="cd-${skill.name.replace(/\s/g, '')}">КД: ${skill.cooldown}с</p>
+                    `;
+                    
+                    skillBtn.addEventListener('click', () => {
+                        if (isFighting && !skillBtn.disabled && coins >= skill.cost) {
+                            coins -= skill.cost;
+                            playerAttack(skill);
+                            updateUI();
+                            
+                            // Cooldown logic
+                            skillBtn.disabled = true;
+                            let cooldownTimer = skill.cooldown;
+                            const cooldownTextElem = document.getElementById(`cd-${skill.name.replace(/\s/g, '')}`);
+                            cooldownTextElem.textContent = `КД: ${cooldownTimer}с`;
+
+                            const cooldownInterval = setInterval(() => {
+                                cooldownTimer--;
+                                cooldownTextElem.textContent = `КД: ${cooldownTimer}с`;
+                                if (cooldownTimer <= 0) {
+                                    clearInterval(cooldownInterval);
+                                    skillBtn.disabled = false;
+                                    cooldownTextElem.textContent = `КД: ${skill.cooldown}с`;
+                                }
+                            }, 1000);
+                        } else if (!isFighting) {
+                            showAlert('Начните бой, чтобы использовать способности!');
+                        } else if (coins < skill.cost) {
+                            showAlert('Недостаточно монет для использования этого умения!');
+                        }
+                    });
+                    playerSkillsElem.appendChild(skillBtn);
+                });
+            }
+        }
+
+        function createCustomClass() {
+            const name = customClassNameInput.value.trim();
+            const skillName = customSkillNameInput.value.trim();
+            const skillDamage = parseInt(customSkillDamageInput.value);
+            const skillCooldown = parseInt(customSkillCooldownInput.value);
+            const cost = 100;
+
+            if (playerLevel < 10) {
+                showAlert('Мастерская доступна только с 10-го уровня!');
+                return;
+            }
+
+            if (!name || !skillName || isNaN(skillDamage) || isNaN(skillCooldown) || skillDamage < 0 || skillCooldown < 0) {
+                showAlert('Пожалуйста, заполните все поля корректно.');
+                return;
+            }
+
+            if (coins < cost) {
+                showAlert('Недостаточно монет для создания класса. Требуется 100 ZC.');
+                return;
+            }
+
+            coins -= cost;
+            const newClassId = `custom-class-${Date.now()}`;
+            classes[newClassId] = {
+                name: name,
+                cost: 0,
+                desc: 'Созданный вами уникальный класс.',
+                skills: [{
+                    name: skillName,
+                    damage: skillDamage,
+                    cooldown: skillCooldown,
+                    cost: 0
+                }]
+            };
+
+            boughtClasses.push(newClassId);
+            showAlert(`Класс "${name}" успешно создан!`);
+            
+            // Очищаем поля ввода
+            customClassNameInput.value = '';
+            customSkillNameInput.value = '';
+            customSkillDamageInput.value = '';
+            customSkillCooldownInput.value = '';
+            
+            updateUI();
+        }
+
+        function toggleMusic() {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                musicToggle.textContent = '♪';
+                musicToggle.style.background = 'linear-gradient(to bottom, #ff9900, #cc6600)';
+            } else {
+                backgroundMusic.pause();
+                musicToggle.textContent = '♪';
+                musicToggle.style.background = 'linear-gradient(to bottom, #555, #333)';
+            }
+        }
+
+
+        // События
+        clickerElem.addEventListener('click', () => {
+            const clickValue = coinsPerClick;
+            addCoins(clickValue);
+            gainXP(1); // Добавляем опыт за клик
+        });
+        
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab + '-tab').classList.add('active');
+            });
+        });
+
+        // Магазин бустов
+        document.querySelector('.boost-shop').addEventListener('click', (e) => {
+            const target = e.target.closest('.boost-item');
+            if (target) {
+                buyBoost(target.id);
+            }
+        });
+
+        // Промокоды
+        promoButton.addEventListener('click', activatePromo);
+        promoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                activatePromo();
+            }
+        });
+
+        // Сохранение/Загрузка
+        saveButton.addEventListener('click', saveGame);
+        loadButton.addEventListener('click', loadGame);
+        resetButton.addEventListener('click', resetGame);
+
+        // Арена
+        arenaStartButton.addEventListener('click', startArenaBattle);
+
+        // Мастерская
+        createClassButton.addEventListener('click', createCustomClass);
+
+        // Музыка
+        musicToggle.addEventListener('click', toggleMusic);
+
+        // Игровой цикл
+        setInterval(() => {
+            addCoins(coinsPerSecond);
+            
+            // Таймеры эффектов
+            for (const effect in activeEffects) {
+                activeEffects[effect].timer--;
+                if (activeEffects[effect].timer <= 0) {
+                    delete activeEffects[effect];
+                }
+            }
+            updateUI();
+        }, 1000);
+
+        // Загрузка игры при старте
+        loadGame();
+        updateUI();
+    </script>
+</body>
+</html>
